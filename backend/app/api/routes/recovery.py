@@ -27,6 +27,23 @@ def scan(
         raise HTTPException(status_code=response_status, detail=str(error)) from error
 
 
+@router.post("/scan/{file_id}", response_model=RecoveryResponse, status_code=status.HTTP_201_CREATED)
+def scan_by_file_id(
+    file_id: str,
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> dict[str, object]:
+    try:
+        return scan_file(db, file_id, settings)
+    except RecoveryServiceError as error:
+        response_status = (
+            status.HTTP_404_NOT_FOUND
+            if str(error) == "File not found"
+            else status.HTTP_400_BAD_REQUEST
+        )
+        raise HTTPException(status_code=response_status, detail=str(error)) from error
+
+
 @router.get("/results/{recovery_id}", response_model=RecoveryResponse)
 def results(recovery_id: str, db: Session = Depends(get_db)) -> dict[str, object]:
     try:

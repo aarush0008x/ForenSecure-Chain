@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForenSecure Chain — Digital Forensics & Data Sanitization Workstation</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- GSAP for micro-interactions & technical animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-emblem">FS</div>
+        <div class="brand-info">
+          <h1>ForenSecure Chain</h1>
+          <p>Digital Forensics • Secure Tomorrow</p>
+        </div>
+      </div>
+
+      <ul class="sidebar-nav">
+        <li><a class="nav-link active" data-view="dashboard"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+        <li><a class="nav-link" data-view="cases"><i data-lucide="folder"></i> Cases</a></li>
+        <li><a class="nav-link" data-view="evidence"><i data-lucide="file-search"></i> Evidence</a></li>
+        <li><a class="nav-link" data-view="recovery"><i data-lucide="refresh-cw"></i> Recovery</a></li>
+        <li><a class="nav-link" data-view="sanitization"><i data-lucide="shield"></i> Sanitization</a></li>
+        <li>
+          <a class="nav-link" data-view="approvals">
+            <i data-lucide="check-circle-2"></i> Approvals
+            <span id="pendingApprovalsBadge" class="nav-badge" style="display:none;">0</span>
+          </a>
+        </li>
+        <li><a class="nav-link" data-view="timeline"><i data-lucide="clock"></i> Timeline</a></li>
+        <li><a class="nav-link" data-view="verification"><i data-lucide="fingerprint"></i> Hash Verification</a></li>
+        <li><a class="nav-link" data-view="ledger"><i data-lucide="git-branch"></i> Audit Ledger</a></li>
+        <li><a class="nav-link" data-view="reports"><i data-lucide="file-text"></i> Reports</a></li>
+        <li><a class="nav-link" data-view="guide"><i data-lucide="book-open"></i> How It Works & Guide</a></li>
+        <li><a class="nav-link" data-view="settings"><i data-lucide="settings"></i> Settings</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-widget">
+          <div id="userAvatarInitials" class="user-avatar">AS</div>
+          <div class="user-meta">
+            <div id="sidebarUserName" class="name">Authenticating...</div>
+            <div class="role-status">
+              <span id="sidebarUserRole">Investigator</span>
+              <span class="status-dot-online" title="Session Authenticated"></span>
+              <span>Online</span>
+            </div>
+          </div>
+          <button id="btnLogout" class="btn-icon" title="Sign out"><i data-lucide="log-out"></i></button>
+        </div>
+
+        <div class="sidebar-callout">
+          <div class="sidebar-callout-title">Integrity Accountability</div>
+          <div class="sidebar-callout-sub">A Safer Digital World • SIH26149</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="search-container">
+          <i data-lucide="search"></i>
+          <input type="text" id="globalSearchInput" class="search-input" placeholder="Search cases, evidence, devices...">
+        </div>
+
+        <div class="topbar-right">
+          <div class="time-pill">
+            <i data-lucide="calendar"></i>
+            <span id="liveTimestamp">Fri, 19 Sep 2026 08:14 PM</span>
+          </div>
+
+          <button id="btnOpenNewCaseModal" class="btn btn-burgundy btn-sm">
+            <i data-lucide="plus"></i> New Case
+          </button>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-container">
+
+        <!-- 1. DASHBOARD VIEW -->
+        <div id="view-dashboard" class="content-view active">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>Dashboard</h2>
+              <p id="dashboardGreeting">Welcome back. Here's what's happening with your investigations today.</p>
+            </div>
+          </div>
+
+          <!-- 4 Metric Cards -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon-wrap"><i data-lucide="folder"></i></div>
+              <div class="metric-body">
+                <div class="metric-label">Active Cases</div>
+                <div class="metric-value-row">
+                  <div id="statActiveCases" class="metric-number">0</div>
+                  <span id="statCasesBadge" class="metric-delta">Live DB</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap"><i data-lucide="file-search"></i></div>
+              <div class="metric-body">
+                <div class="metric-label">Evidence Items</div>
+                <div class="metric-value-row">
+                  <div id="statEvidenceItems" class="metric-number">0</div>
+                  <span id="statEvidenceBadge" class="metric-delta">In Custody</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap"><i data-lucide="refresh-cw"></i></div>
+              <div class="metric-body">
+                <div class="metric-label">Recovery Jobs</div>
+                <div class="metric-value-row">
+                  <div id="statRecoveryJobs" class="metric-number">0</div>
+                  <span class="metric-delta">Carving Engine</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap"><i data-lucide="shield-check"></i></div>
+              <div class="metric-body">
+                <div class="metric-label">Pending Approvals</div>
+                <div class="metric-value-row">
+                  <div id="statPendingApprovals" class="metric-number">0</div>
+                  <span id="statApprovalsBadge" class="metric-delta">Dual-Sign Gate</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Hero Card (Exact match to uploaded design) -->
+          <div class="feature-hero-card">
+            <div class="hero-left-content">
+              <div class="hero-badge-row">
+                <span class="tag-mono">— SIH26149</span>
+                <span class="badge-system-secure"><span class="dot"></span> SYSTEM SECURE</span>
+              </div>
+              <h1 class="hero-headline">
+                Recover Evidence.<br>
+                <span class="highlight-burgundy">Verify Integrity.</span><br>
+                Erase Securely.
+              </h1>
+              <p class="hero-desc">
+                An integrated digital forensics and data sanitization platform for controlled evidence recovery, integrity verification and secure device reuse.
+              </p>
+              <div class="hero-action-buttons">
+                <button class="btn btn-burgundy" onclick="switchView('cases')">
+                  Open Forensic Console <i data-lucide="arrow-right"></i>
+                </button>
+                <button class="btn btn-secondary" onclick="openArchitectureModal()">
+                  View Architecture
+                </button>
+              </div>
+            </div>
+
+            <!-- Technical Dossier Right Graphic -->
+            <div class="dossier-panel">
+              <div class="dossier-header">
+                <span class="dossier-title">Case Dossier Pipeline</span>
+                <span id="dossierCaseRef" class="dossier-badge">PIPELINE READY</span>
+              </div>
+              <div class="dossier-steps" id="dossierWorkflowSteps">
+                <div class="dossier-step-row"><span class="dossier-dot"></span> <span>01. Acquisition & Baseline SHA-256</span></div>
+                <div class="dossier-step-row"><span class="dossier-dot"></span> <span>02. Read-Only Forensic Analysis</span></div>
+                <div class="dossier-step-row"><span class="dossier-dot"></span> <span>03. Multi-Format Signature Recovery</span></div>
+                <div class="dossier-step-row"><span class="dossier-dot"></span> <span>04. Activity Timeline Reconstruction</span></div>
+                <div class="dossier-step-row"><span class="dossier-dot"></span> <span>05. Two-Person Legal Sanitization</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle Row: Case Activity + System Status -->
+          <div class="two-col-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Case Activity</h3>
+                <a class="card-link" onclick="switchView('timeline')">View All</a>
+              </div>
+              <div id="dashboardActivityFeed" class="activity-feed">
+                <!-- Dynamically injected from real backend activity_events -->
+                <div class="empty-state" style="padding: 20px;">
+                  <p class="empty-state-desc">No activity recorded yet in current investigations.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">System Status</h3>
+                <span style="font-size:11px; color:var(--text-muted);">Real-time</span>
+              </div>
+              <div class="status-list">
+                <div class="status-row">
+                  <div class="status-row-left"><i data-lucide="server"></i> <span>API Services</span></div>
+                  <div class="status-indicator online"><span class="dot"></span> <span>Online</span></div>
+                </div>
+                <div class="status-row">
+                  <div class="status-row-left"><i data-lucide="database"></i> <span>Database & Storage</span></div>
+                  <div class="status-indicator online"><span class="dot"></span> <span>Online</span></div>
+                </div>
+                <div class="status-row">
+                  <div class="status-row-left"><i data-lucide="git-commit"></i> <span>Audit Ledger</span></div>
+                  <div id="ledgerStatusPill" class="status-indicator online"><span class="dot"></span> <span>Valid</span></div>
+                </div>
+                <div class="status-row">
+                  <div class="status-row-left"><i data-lucide="shield"></i> <span>Sanitization Engine</span></div>
+                  <div class="status-indicator online"><span class="dot"></span> <span>Standby</span></div>
+                </div>
+              </div>
+              <div class="status-sync-box">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="refresh-cw" style="width:14px; height:14px;"></i>
+                  <span>Last Sync: <strong id="lastSyncTime">Just now</strong></span>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="refreshDashboardData()">Sync</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lower Row: Recent Cases Table -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <h3 class="card-title">Recent Cases</h3>
+              <a class="card-link" onclick="switchView('cases')">View All</a>
+            </div>
+            <div class="table-container">
+              <table class="data-table" id="dashboardCasesTable">
+                <thead>
+                  <tr>
+                    <th>Case ID</th>
+                    <th>Case Name</th>
+                    <th>Investigator</th>
+                    <th>Status</th>
+                    <th>Legal Hold</th>
+                    <th>Created</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Injected from real backend data -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Bottom Impact Banner -->
+          <div class="bottom-banner">
+            <div>
+              <strong>Digital Evidence. Real Impact.</strong>
+              <span>For a more secure, accountable and trustworthy digital future.</span>
+            </div>
+            <a onclick="switchView('ledger')">Verify Audit Ledger <i data-lucide="chevron-right" style="width:14px; height:14px;"></i></a>
+          </div>
+        </div>
+
+        <!-- 2. CASES VIEW -->
+        <div id="view-cases" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>Case Management</h2>
+              <p>Chain-of-custody case registration, device assignment, and legal hold administration.</p>
+            </div>
+            <button class="btn btn-burgundy" onclick="openNewCaseModal()">
+              <i data-lucide="plus"></i> Register New Case
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="data-table" id="fullCasesTable">
+                <thead>
+                  <tr>
+                    <th>Case Number</th>
+                    <th>Title</th>
+                    <th>Investigator</th>
+                    <th>Status</th>
+                    <th>Legal Hold</th>
+                    <th>Created (UTC)</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. CASE DETAIL VIEW -->
+        <div id="view-casedetail" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                <button class="btn btn-secondary btn-sm" onclick="switchView('cases')"><i data-lucide="arrow-left"></i> Back to Cases</button>
+                <span id="caseDetailNumberBadge" class="tag-mono" style="font-size:13px; font-weight:600;">CASE-ID</span>
+              </div>
+              <h2 id="caseDetailTitle">Case Title</h2>
+              <p id="caseDetailDescription" style="color:var(--text-secondary); margin-top:2px;">Case Description</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button id="btnCaseToggleHold" class="btn btn-secondary btn-sm">Toggle Legal Hold</button>
+              <button id="btnCaseDownloadPdf" class="btn btn-burgundy btn-sm"><i data-lucide="download"></i> Official Report PDF</button>
+            </div>
+          </div>
+
+          <!-- Horizontal Case Lifecycle Stepper (animated with GSAP) -->
+          <div class="lifecycle-stepper" id="caseLifecycleStepper">
+            <div class="stepper-node completed" data-step="registered"><div class="stepper-circle">1</div><div class="stepper-label">Registered</div></div>
+            <div class="stepper-node" data-step="acquired"><div class="stepper-circle">2</div><div class="stepper-label">Acquired</div></div>
+            <div class="stepper-node" data-step="analyzed"><div class="stepper-circle">3</div><div class="stepper-label">Analyzed</div></div>
+            <div class="stepper-node" data-step="recovered"><div class="stepper-circle">4</div><div class="stepper-label">Recovered</div></div>
+            <div class="stepper-node" data-step="reviewed"><div class="stepper-circle">5</div><div class="stepper-label">Reviewed</div></div>
+            <div class="stepper-node" data-step="approved"><div class="stepper-circle">6</div><div class="stepper-label">Approved</div></div>
+            <div class="stepper-node" data-step="sanitized"><div class="stepper-circle">7</div><div class="stepper-label">Sanitized</div></div>
+          </div>
+
+          <!-- Case Details Content Tabs -->
+          <div class="two-col-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Evidence Devices & Custody</h3>
+                <button class="btn btn-secondary btn-sm" onclick="openDeviceRegisterModal()"><i data-lucide="plus"></i> Register Device</button>
+              </div>
+              <div class="table-container">
+                <table class="data-table" id="caseDevicesTable">
+                  <thead>
+                    <tr><th>Type</th><th>Identifier / Serial</th><th>Baseline SHA-256</th><th>Status</th></tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Evidence Files</h3>
+                <button class="btn btn-burgundy btn-sm" onclick="openEvidenceIngestModal()"><i data-lucide="upload"></i> Ingest File</button>
+              </div>
+              <div class="table-container">
+                <table class="data-table" id="caseFilesTable">
+                  <thead>
+                    <tr><th>Filename</th><th>Size</th><th>Original Hash</th><th>Status</th></tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. EVIDENCE INVENTORY VIEW -->
+        <div id="view-evidence" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>Evidence Custody</h2>
+              <p>Controlled evidence repository with baseline SHA-256 verification and storage containment.</p>
+            </div>
+            <button class="btn btn-burgundy" onclick="openEvidenceIngestModal()">
+              <i data-lucide="upload-cloud"></i> Ingest Evidence File
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="data-table" id="fullEvidenceTable">
+                <thead>
+                  <tr>
+                    <th>Evidence ID</th>
+                    <th>Filename</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>SHA-256 Digest</th>
+                    <th>Acquired</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. FILE RECOVERY & CARVING VIEW -->
+        <div id="view-recovery" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>Advanced File Recovery & Signature Carving</h2>
+              <p>Read-only multi-format carver for unallocated clusters and controlled forensic disk dumps.</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-header">
+              <h3 class="card-title">Carve From Controlled Disk Dump / Image</h3>
+            </div>
+            <form id="recoveryScanForm" style="display:flex; gap:16px; align-items:flex-end;">
+              <div class="form-group" style="flex:1; margin:0;">
+                <label class="form-label">Upload Target Binary Dump (.bin, .raw, .img)</label>
+                <input type="file" id="recoveryDumpFileInput" class="form-input" required>
+              </div>
+              <button type="submit" id="btnRunCarverScan" class="btn btn-burgundy" style="height:38px;">
+                <i data-lucide="search"></i> Run Signature Carving
+              </button>
+            </form>
+            <div id="carvingProgressIndicator" style="display:none; margin-top:16px; padding:12px 14px; background:var(--color-bg); border-radius:var(--radius-sm); border:1px solid var(--color-border); font-size:13px; color:var(--color-burgundy); font-family:var(--font-mono);">
+              <span id="carvingProgressText">Executing read-only signature carving...</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Carved Artifacts (<span id="carvedArtifactsCount">0</span> Recovered)</h3>
+            </div>
+            <div class="table-container">
+              <table class="data-table" id="recoveredArtifactsTable">
+                <thead>
+                  <tr>
+                    <th>Artifact Name</th>
+                    <th>Format</th>
+                    <th>Size</th>
+                    <th>Recovered SHA-256</th>
+                    <th>Offset Range & Header Signature</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. SANITIZATION & APPROVALS VIEW -->
+        <div id="view-sanitization" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>Secure Data Sanitization Gate</h2>
+              <p>Controlled hardware/file overwriting protected by procedural two-person authorization.</p>
+            </div>
+          </div>
+
+          <div class="card" style="border-left: 4px solid var(--color-burgundy); margin-bottom: 20px;">
+            <h3 style="font-size:16px; font-weight:600; color:var(--color-primary); margin-bottom:6px;">Sanitization Security Gate Policy</h3>
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.6;">
+              Data sanitization permanently purges all accessible bit streams. To prevent premature destruction of evidence,
+              the execution gate remains locked until legal hold is released and two distinct authorized officers approve the request.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Sanitization Authorization Queue</h3>
+              <button class="btn btn-secondary btn-sm" onclick="openRequestApprovalModal()"><i data-lucide="file-plus"></i> Request Sanitization Approval</button>
+            </div>
+            <div class="table-container">
+              <table class="data-table" id="sanitizationGateTable">
+                <thead>
+                  <tr>
+                    <th>Target ID</th>
+                    <th>Standard / Policy</th>
+                    <th>Legal Hold</th>
+                    <th>Dual-Signatures Status</th>
+                    <th>Sanitization Execution</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. TWO-PERSON APPROVALS VIEW -->
+        <div id="view-approvals" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>Two-Person Approval Queue</h2>
+              <p>Review, verify, and digitally authorize sanitization requests with distinct dual sign-off.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="data-table" id="dualApprovalsTable">
+                <thead>
+                  <tr>
+                    <th>Request ID</th>
+                    <th>Case Ref</th>
+                    <th>Target</th>
+                    <th>Requested By</th>
+                    <th>1st Approver</th>
+                    <th>2nd Approver</th>
+                    <th>Workflow Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. TIMELINE VIEW -->
+        <div id="view-timeline" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>Activity Reconstruction Timeline</h2>
+              <p>Chronological sequence of evidentiary events, custody transfers, and system actions.</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <label style="font-size:12px; color:var(--text-secondary);">Select Case:</label>
+              <select id="timelineCaseSelector" class="form-select" style="width:240px;"></select>
+            </div>
+          </div>
+
+          <div class="card">
+            <div id="fullTimelineContainer" style="padding: 10px 0;"></div>
+          </div>
+        </div>
+
+        <!-- 9. HASH VERIFICATION VIEW -->
+        <div id="view-verification" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>Cryptographic Hash Verification</h2>
+              <p>Compare original baseline SHA-256 against controlled storage to verify zero tampering.</p>
+            </div>
+          </div>
+
+          <div class="card" style="max-width:720px; margin-bottom:20px;">
+            <form id="hashVerifyForm">
+              <div class="form-group">
+                <label class="form-label">Select Evidence Item or Enter File ID</label>
+                <input type="text" id="verifyInputFileId" class="form-input" placeholder="Paste file UUID or select from Evidence" required>
+              </div>
+              <button type="submit" class="btn btn-burgundy">Verify SHA-256 Integrity</button>
+            </form>
+          </div>
+
+          <div id="hashVerificationResultCard" class="card" style="max-width:720px; display:none;">
+            <!-- Injected verification card with animated scanner -->
+          </div>
+        </div>
+
+        <!-- 10. TAMPER-EVIDENT AUDIT LEDGER VIEW -->
+        <div id="view-ledger" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>Tamper-Evident Hash-Linked Audit Ledger</h2>
+              <p>Cryptographically linked sequence of forensic transactions with deterministic validation.</p>
+            </div>
+            <button id="btnRecalculateChain" class="btn btn-burgundy">
+              <i data-lucide="shield-check"></i> Verify Chain Integrity
+            </button>
+          </div>
+
+          <div id="chainVerificationAlert" style="display:none; margin-bottom:18px;"></div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="data-table" id="auditLedgerTable">
+                <thead>
+                  <tr>
+                    <th>Index</th>
+                    <th>Action</th>
+                    <th>Actor ID</th>
+                    <th>Previous Block Hash</th>
+                    <th>Current Block Hash</th>
+                    <th>Timestamp (UTC)</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 11. REPORTS VIEW -->
+        <div id="view-reports" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>Forensic Reports & Certificates</h2>
+              <p>Cryptographically signed evidence summaries and verifiable data sanitization certificates.</p>
+            </div>
+          </div>
+
+          <div class="two-col-grid">
+            <div class="card">
+              <h3 class="card-title" style="margin-bottom:12px;">Evidence & Case Reports</h3>
+              <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">Generate official forensic summary PDF containing custody chain, baseline hashes, and timeline events.</p>
+              <div class="form-group">
+                <label class="form-label">Select Case</label>
+                <select id="reportCaseSelector" class="form-select"></select>
+              </div>
+              <button id="btnGenerateCaseReportPdf" class="btn btn-burgundy"><i data-lucide="download"></i> Download Case Report PDF</button>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title" style="margin-bottom:12px;">Public Certificate Token Verification</h3>
+              <p style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">Scan or input an issued verification token to confirm cryptographic ledger anchor.</p>
+              <form id="tokenVerifyForm">
+                <div class="form-group">
+                  <input type="text" id="inputVerifyToken" class="form-input" placeholder="e.g. VTOK-XXXXXXXXXXXX" required>
+                </div>
+                <button type="submit" class="btn btn-secondary"><i data-lucide="check"></i> Verify Certificate</button>
+              </form>
+              <div id="tokenVerifyResult" style="margin-top:14px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 11. HOW IT WORKS & OPERATIONAL GUIDE VIEW -->
+        <div id="view-guide" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <div class="section-label">FORENSIC OPERATIONS MANUAL</div>
+              <h2>How ForenSecure Chain Works & Operational Guide</h2>
+              <p>Comprehensive architectural breakdown, end-to-end procedural manual, and judicial admissibility standards.</p>
+            </div>
+            <div>
+              <button class="btn btn-burgundy" onclick="switchView('cases'); openNewCaseModal();">
+                <i data-lucide="plus"></i> Start New Case
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Core Pillars Hero Banner -->
+          <div class="card" style="margin-bottom:24px; background:linear-gradient(135deg, #172337 0%, #1e2f4a 100%); color:#ffffff; border:none;">
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; padding:8px 0;">
+              <div>
+                <div style="color:#60A5FA; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">
+                  <i data-lucide="shield-check" style="width:14px; height:14px; vertical-align:-2px; margin-right:4px;"></i> Pillar 1
+                </div>
+                <h4 style="color:#ffffff; font-size:14px; margin-bottom:6px;">Zero-Trust Ingestion</h4>
+                <p style="color:#94A3B8; font-size:12px; line-height:1.45;">SHA-256 cryptographic baseline computed immediately upon acquisition. Original storage is write-protected.</p>
+              </div>
+
+              <div>
+                <div style="color:#F472B6; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">
+                  <i data-lucide="git-branch" style="width:14px; height:14px; vertical-align:-2px; margin-right:4px;"></i> Pillar 2
+                </div>
+                <h4 style="color:#ffffff; font-size:14px; margin-bottom:6px;">Immutable Ledger</h4>
+                <p style="color:#94A3B8; font-size:12px; line-height:1.45;">Every event commits an immutable block with parent hash chaining, creating an unbroken chain of custody.</p>
+              </div>
+
+              <div>
+                <div style="color:#FBBF24; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">
+                  <i data-lucide="users" style="width:14px; height:14px; vertical-align:-2px; margin-right:4px;"></i> Pillar 3
+                </div>
+                <h4 style="color:#ffffff; font-size:14px; margin-bottom:6px;">Dual-Signature Gate</h4>
+                <p style="color:#94A3B8; font-size:12px; line-height:1.45;">Destructive sanitization is physically blocked until two distinct authorized officers independently sign off.</p>
+              </div>
+
+              <div>
+                <div style="color:#34D399; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">
+                  <i data-lucide="file-badge" style="width:14px; height:14px; vertical-align:-2px; margin-right:4px;"></i> Pillar 4
+                </div>
+                <h4 style="color:#ffffff; font-size:14px; margin-bottom:6px;">NIST SP 800-88 Proof</h4>
+                <p style="color:#94A3B8; font-size:12px; line-height:1.45;">Multi-pass zero-overwrite sanitization with post-erasure byte validation and permanent QR certificates.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: 8-Step Forensic Lifecycle -->
+          <div class="card" style="margin-bottom:24px;">
+            <div class="card-header" style="border-bottom:1px solid var(--color-border); padding-bottom:12px; margin-bottom:18px;">
+              <h3 class="card-title">The 8-Step Forensic Examination Lifecycle (Steps to Use)</h3>
+              <p style="font-size:12.5px; color:var(--text-secondary);">Follow this standardized operating procedure for all evidentiary acquisitions and data sanitization tasks.</p>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
+              <!-- Step 1 -->
+              <div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <span class="badge" style="background:var(--color-burgundy-light); color:var(--color-burgundy); font-weight:700;">STEP 01</span>
+                  <button class="btn btn-secondary btn-sm" style="font-size:11px; padding:3px 8px;" onclick="switchView('cases')">Go to Cases &rarr;</button>
+                </div>
+                <h4 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Register Case Docket & Legal Hold</h4>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  Initialize a new case docket with official case number, incident description, and assigned Lead Examiner. Ensure <strong>Legal Hold Policy</strong> is activated to prevent premature erasure during legal discovery.
+                </p>
+              </div>
+
+              <!-- Step 2 -->
+              <div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <span class="badge" style="background:var(--color-burgundy-light); color:var(--color-burgundy); font-weight:700;">STEP 02</span>
+                  <button class="btn btn-secondary btn-sm" style="font-size:11px; padding:3px 8px;" onclick="switchView('evidence')">Go to Devices &rarr;</button>
+                </div>
+                <h4 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Register Physical Storage Hardware</h4>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  Catalog target hardware (HDDs, SSDs, flash memory, smartphones) with model identifier and physical serial numbers. Calculate and record the physical bitstream baseline SHA-256 hash.
+                </p>
+              </div>
+
+              <!-- Step 3 -->
+              <div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <span class="badge" style="background:var(--color-burgundy-light); color:var(--color-burgundy); font-weight:700;">STEP 03</span>
+                  <button class="btn btn-secondary btn-sm" style="font-size:11px; padding:3px 8px;" onclick="switchView('evidence')">Ingest Files &rarr;</button>
+                </div>
+                <h4 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Ingest Evidence Files & Lock Baseline Hash</h4>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  Upload forensic raw disk images or file artifacts. The engine computes SHA-256 fingerprints in real time, places files in isolated write-protected storage, and commits an immutable acquisition block to the ledger.
+                </p>
+              </div>
+
+              <!-- Step 4 -->
+              <div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <span class="badge" style="background:var(--color-burgundy-light); color:var(--color-burgundy); font-weight:700;">STEP 04</span>
+                  <button class="btn btn-secondary btn-sm" style="font-size:11px; padding:3px 8px;" onclick="switchView('recovery')">Run Carving &rarr;</button>
+                </div>
+                <h4 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Execute Deep File Carving & Recovery</h4>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  Analyze raw bytes to extract deleted, damaged, or unallocated files using signature carving (JPEG, PNG, PDF, ZIP, GIF). Carved items are cataloged separately without modifying primary evidence.
+                </p>
+              </div>
+
+              <!-- Step 5 -->
+              <div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <span class="badge" style="background:var(--color-burgundy-light); color:var(--color-burgundy); font-weight:700;">STEP 05</span>
+                  <button class="btn btn-secondary btn-sm" style="font-size:11px; padding:3px 8px;" onclick="switchView('timeline')">View Timeline &rarr;</button>
+                </div>
+                <h4 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Inspect Event Reconstruction Timeline</h4>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  Review the chronological activity timeline to correlate suspect actions, file timestamps, evidence access logs, and legal hold state transitions with forensic precision.
+                </p>
+              </div>
+
+              <!-- Step 6 -->
+              <div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <span class="badge" style="background:var(--color-burgundy-light); color:var(--color-burgundy); font-weight:700;">STEP 06</span>
+                  <button class="btn btn-secondary btn-sm" style="font-size:11px; padding:3px 8px;" onclick="switchView('sanitization')">Sanitization &rarr;</button>
+                </div>
+                <h4 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Release Legal Hold & Request Sanitization</h4>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  When investigation concludes or retention period expires, toggle Legal Hold to Released and submit a formal media sanitization request citing regulatory or decommissioning grounds.
+                </p>
+              </div>
+
+              <!-- Step 7 -->
+              <div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <span class="badge" style="background:var(--color-burgundy-light); color:var(--color-burgundy); font-weight:700;">STEP 07</span>
+                  <button class="btn btn-secondary btn-sm" style="font-size:11px; padding:3px 8px;" onclick="switchView('approvals')">Approvals Queue &rarr;</button>
+                </div>
+                <h4 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Dual-Officer Independent Authorization</h4>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  Two distinct Authorized Officers review the justification in the Approvals Queue. The requester is barred from self-approval. Both signatures are recorded permanently on the blockchain ledger.
+                </p>
+              </div>
+
+              <!-- Step 8 -->
+              <div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                  <span class="badge" style="background:var(--color-burgundy-light); color:var(--color-burgundy); font-weight:700;">STEP 08</span>
+                  <button class="btn btn-secondary btn-sm" style="font-size:11px; padding:3px 8px;" onclick="switchView('reports')">Generate Dossier &rarr;</button>
+                </div>
+                <h4 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Sanitize, Verify & Export Court Dossier</h4>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  Execute NIST SP 800-88 cryptographic wipe. The engine re-reads storage to verify zero entropy, mints a verifiable QR certificate, and generates official 3-page Case Evidence Dossiers.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Regulatory Compliance & Court Admissibility -->
+          <div class="card">
+            <div class="card-header" style="border-bottom:1px solid var(--color-border); padding-bottom:12px; margin-bottom:18px;">
+              <h3 class="card-title">Judicial Admissibility & Technical Compliance</h3>
+              <p style="font-size:12.5px; color:var(--text-secondary);">International standards and statutory mandates fulfilled by the ForenSecure Chain architecture.</p>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
+              <div style="background:var(--color-bg); padding:16px; border-radius:var(--radius-md); border:1px solid var(--color-border);">
+                <div style="font-weight:700; color:var(--color-primary); font-size:13.5px; margin-bottom:6px;">ISO/IEC 27037:2012</div>
+                <div style="font-size:11px; color:var(--color-burgundy); font-weight:600; margin-bottom:8px;">EVIDENCE HANDLING</div>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  Specifies strict guidelines for digital evidence identification, collection, acquisition, and preservation to ensure provenance and prevent spoliation.
+                </p>
+              </div>
+
+              <div style="background:var(--color-bg); padding:16px; border-radius:var(--radius-md); border:1px solid var(--color-border);">
+                <div style="font-weight:700; color:var(--color-primary); font-size:13.5px; margin-bottom:6px;">NIST SP 800-88 Rev. 1</div>
+                <div style="font-size:11px; color:var(--color-success); font-weight:600; margin-bottom:8px;">MEDIA SANITIZATION</div>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  Defines Clear, Purge, and Destroy sanitization standards with post-overwriting verification to prevent data recovery by laboratory techniques.
+                </p>
+              </div>
+
+              <div style="background:var(--color-bg); padding:16px; border-radius:var(--radius-md); border:1px solid var(--color-border);">
+                <div style="font-weight:700; color:var(--color-primary); font-size:13.5px; margin-bottom:6px;">IEA § 65B & US FRE 902</div>
+                <div style="font-size:11px; color:var(--color-primary); font-weight:600; margin-bottom:8px;">COURT ADMISSIBILITY</div>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                  Self-authenticating electronic record certification under statutory rules governing computer-generated evidence and unbroken custody proofs.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 12. SETTINGS VIEW -->
+        <div id="view-settings" class="content-view" style="display:none;">
+          <div class="page-header">
+            <div class="page-title-group">
+              <h2>System Settings & Permissions</h2>
+              <p>Active authenticated session, cryptographic configuration, and system parameters.</p>
+            </div>
+          </div>
+
+          <div class="card" style="max-width:680px;">
+            <div class="status-list">
+              <div class="status-row"><span>User Identity</span><strong id="settingsUserName">---</strong></div>
+              <div class="status-row"><span>Authorized Role</span><strong id="settingsUserRole">---</strong></div>
+              <div class="status-row"><span>Backend URL</span><strong class="tag-mono">http://127.0.0.1:8000</strong></div>
+              <div class="status-row"><span>Hash Algorithm</span><strong class="tag-mono">SHA-256 (FIPS 180-4)</strong></div>
+              <div class="status-row"><span>Audit Anchor</span><strong>Tamper-Evident Hash-Linked SQL Ledger</strong></div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- 1. New Case Modal -->
+  <div id="modalNewCase" class="modal-backdrop">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3 class="modal-title">Register Forensic Investigation</h3>
+        <button class="btn-icon" onclick="closeModal('modalNewCase')"><i data-lucide="x"></i></button>
+      </div>
+      <form id="formCreateCase">
+        <div class="form-group">
+          <label class="form-label">Case Number / Reference</label>
+          <input type="text" id="modalCaseNumber" class="form-input" placeholder="e.g. FS-2026-001" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Investigation Title</label>
+          <input type="text" id="modalCaseTitle" class="form-input" placeholder="e.g. Former Employee Data Exfiltration" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Case Description</label>
+          <textarea id="modalCaseDesc" class="form-textarea" placeholder="Detail the scope of inquiry, suspect devices, and context..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Legal Hold Policy</label>
+          <select id="modalCaseLegalHold" class="form-select">
+            <option value="true" selected>Active Legal Hold (Sanitization Blocked)</option>
+            <option value="false">Released (Sanitization Permitted upon Approval)</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalNewCase')">Cancel</button>
+          <button type="submit" class="btn btn-burgundy">Register Case</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Device Registration Modal -->
+  <div id="modalNewDevice" class="modal-backdrop">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3 class="modal-title">Register Evidence Device</h3>
+        <button class="btn-icon" onclick="closeModal('modalNewDevice')"><i data-lucide="x"></i></button>
+      </div>
+      <form id="formCreateDevice">
+        <div class="form-group">
+          <label class="form-label">Device Hardware Type</label>
+          <input type="text" id="modalDeviceType" class="form-input" placeholder="e.g. SATA HDD / NVMe SSD / Android Smartphone" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Serial Number / Hardware ID</label>
+          <input type="text" id="modalDeviceSerial" class="form-input" placeholder="e.g. WD-WCC4N7182938" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Baseline Physical Image SHA-256</label>
+          <input type="text" id="modalDeviceHash" class="form-input tag-mono" placeholder="64-character hex digest" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalNewDevice')">Cancel</button>
+          <button type="submit" class="btn btn-burgundy">Register Device</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Ingest Evidence Modal -->
+  <div id="modalIngestEvidence" class="modal-backdrop">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3 class="modal-title">Ingest Evidence Into Custody</h3>
+        <button class="btn-icon" onclick="closeModal('modalIngestEvidence')"><i data-lucide="x"></i></button>
+      </div>
+      <form id="formIngestEvidence">
+        <div class="form-group">
+          <label class="form-label">Target Case</label>
+          <select id="modalEvidenceCaseSelect" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Evidence File</label>
+          <input type="file" id="modalEvidenceFileInput" class="form-input" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalIngestEvidence')">Cancel</button>
+          <button type="submit" id="btnSubmitIngest" class="btn btn-burgundy">Upload & Hash Ingest</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Request Sanitization Approval Modal -->
+  <div id="modalRequestApproval" class="modal-backdrop">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3 class="modal-title">Request Sanitization Authorization</h3>
+        <button class="btn-icon" onclick="closeModal('modalRequestApproval')"><i data-lucide="x"></i></button>
+      </div>
+      <form id="formRequestApproval">
+        <div class="form-group">
+          <label class="form-label">Case Reference</label>
+          <select id="modalApprovalCaseSelect" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target Evidence ID</label>
+          <input type="text" id="modalApprovalTargetId" class="form-input" placeholder="Evidence file UUID" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sanitization Standard & Method</label>
+          <select id="modalApprovalMethod" class="form-select">
+            <option value="overwrite_then_delete">Zero Overwrite & Purge (Controlled Prototype)</option>
+            <option value="nist_800_88_clear_prototype">NIST SP 800-88 Rev 1 Clear Aligned</option>
+            <option value="dod_5220_22_m_prototype">DoD 5220.22-M 3-Pass Aligned</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Legal Closure Justification</label>
+          <textarea id="modalApprovalNote" class="form-textarea" placeholder="State reasons why retention is no longer legally mandated..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalRequestApproval')">Cancel</button>
+          <button type="submit" class="btn btn-burgundy">Submit for Dual Sign-off</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Architecture View Modal -->
+  <div id="modalArchitecture" class="modal-backdrop">
+    <div class="modal-panel" style="max-width:680px;">
+      <div class="modal-header">
+        <h3 class="modal-title">ForenSecure Chain — Target Architecture (SIH26149)</h3>
+        <button class="btn-icon" onclick="closeModal('modalArchitecture')"><i data-lucide="x"></i></button>
+      </div>
+      <div style="font-size:13px; color:var(--text-secondary); line-height:1.6;">
+        <p style="margin-bottom:12px;">
+          ForenSecure Chain provides an end-to-end digital forensics and data sanitization lifecycle:
+        </p>
+        <div style="background:var(--color-bg); padding:14px; border-radius:var(--radius-sm); font-family:var(--font-mono); font-size:11.5px; margin-bottom:16px; border:1px solid var(--color-border);">
+          Case Registration → Evidence Registration → Forensic Acquisition → SHA-256 Integrity → Analysis & Recovery → Activity Timeline → Evidence Report → Legal Closure → Two-Person Approval → Sanitization → Verification → Certificate → Immutable Audit Record
+        </div>
+        <ul style="padding-left:20px; margin-bottom:16px;">
+          <li><strong>Role-Based Access Control:</strong> Strict server-side separation for Investigator, Authorized Officer, and Admin roles.</li>
+          <li><strong>Two-Person Approval Gate:</strong> Zero destructive overwriting permitted until two distinct officers sign off.</li>
+          <li><strong>Tamper-Evident Ledger:</strong> SHA-256 hash-chained local ledger with cryptographic integrity recalculation.</li>
+          <li><strong>Verifiable PDF Certificates:</strong> Embedded QR verification tokens linking to immutable ledger blocks.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalArchitecture')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

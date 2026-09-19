@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForenSecure Chain — Digital Forensics & Data Sanitization Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    /* Public Landing Specific Styles */
+    .landing-header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .landing-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .landing-nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+
+    .landing-nav-links a:hover {
+      color: var(--color-burgundy);
+    }
+
+    .landing-hero-section {
+      max-width: 1200px;
+      margin: 60px auto 40px;
+      padding: 0 40px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .landing-section-divider {
+      border-bottom: 1px solid var(--color-border);
+      max-width: 1200px;
+      margin: 60px auto;
+    }
+
+    .landing-content-block {
+      max-width: 1200px;
+      margin: 0 auto 60px;
+      padding: 0 40px;
+    }
+
+    .section-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--color-burgundy);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      letter-spacing: -0.3px;
+    }
+
+    .section-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 680px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .features-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .feature-box-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: var(--color-burgundy-light);
+      color: var(--color-burgundy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .feature-box-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .feature-box-text {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .workflow-svg-wrap {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      position: relative;
+    }
+
+    /* Interactive Dossier Graphic in Landing Hero */
+    .landing-dossier {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+
+    .dossier-line-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border-subtle);
+      font-size: 13px;
+    }
+
+    .dossier-line-row:last-child {
+      border-bottom: none;
+    }
+
+    .dossier-label {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dossier-value {
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* Landing Footer */
+    .landing-footer {
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      padding: 40px 40px 30px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Landing Header -->
+  <header class="landing-header">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div class="brand-emblem">FS</div>
+      <div class="brand-info">
+        <h1 style="font-size:15px; font-weight:600; color:var(--color-primary);">ForenSecure Chain</h1>
+        <p style="font-size:11px; color:var(--text-muted);">Smart India Hackathon • SIH26149</p>
+      </div>
+    </div>
+
+    <nav>
+      <ul class="landing-nav-links">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#capabilities">Forensics</a></li>
+        <li><a href="#recovery">Recovery</a></li>
+        <li><a href="#sanitization">Sanitization</a></li>
+        <li><a href="#ledger">Audit Ledger</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+      </ul>
+    </nav>
+
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button class="btn btn-secondary btn-sm" onclick="openLoginModal()">Sign In</button>
+      <button class="btn btn-burgundy btn-sm" onclick="openConsoleDirect()">Open Console <i data-lucide="arrow-right" style="width:14px; height:14px;"></i></button>
+    </div>
+  </header>
+
+  <!-- Section 2: Asymmetrical Editorial Hero -->
+  <section id="overview" class="landing-hero-section">
+    <div class="landing-hero-left">
+      <div class="section-label">DIGITAL FORENSICS • DATA SANITIZATION</div>
+      <h1 style="font-size:38px; font-weight:700; line-height:1.2; color:var(--color-primary); margin-bottom:16px; letter-spacing:-0.5px;">
+        Recover Evidence.<br>
+        <span style="color:var(--color-burgundy);">Verify Integrity.</span><br>
+        Erase Securely.
+      </h1>
+      <p style="font-size:15px; color:var(--text-secondary); line-height:1.6; margin-bottom:28px;">
+        An integrated digital forensics and data sanitization platform for controlled evidence recovery, integrity verification and secure device reuse.
+      </p>
+
+      <div style="display:flex; gap:14px; margin-bottom:32px;">
+        <button class="btn btn-burgundy" onclick="openConsoleDirect()">Open Forensic Console <i data-lucide="arrow-right"></i></button>
+        <button class="btn btn-secondary" onclick="document.getElementById('architecture').scrollIntoView({behavior:'smooth'})">View Architecture</button>
+      </div>
+
+      <!-- 4 Pillars Under Buttons -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; border-top:1px solid var(--color-border); padding-top:20px;">
+        <div style="display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text-secondary);">
+          <i data-lucide="fingerprint" style="width:16px; height:16px; color:var(--color-burgundy);"></i>
+          <span>SHA-256 Baseline Integrity</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text-secondary);">
+          <i data-lucide="file-search" style="width:16px; height:16px; color:var(--color-burgundy);"></i>
+          <span>Signature-Based Recovery</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text-secondary);">
+          <i data-lucide="git-branch" style="width:16px; height:16px; color:var(--color-burgundy);"></i>
+          <span>Tamper-Evident Audit Ledger</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text-secondary);">
+          <i data-lucide="shield-check" style="width:16px; height:16px; color:var(--color-burgundy);"></i>
+          <span>Two-Person Sanitization Gate</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Animated Forensic Evidence Visualization -->
+    <div class="landing-dossier" id="heroDossierCard">
+      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--color-border); padding-bottom:14px; margin-bottom:16px;">
+        <div>
+          <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">EVIDENCE DOSSIER</span>
+          <h4 style="font-size:16px; font-weight:600; color:var(--color-primary);">FS-CASE-CONTROLLED</h4>
+        </div>
+        <span class="badge-status badge-under-investigation">ACTIVE PROTOCOL</span>
+      </div>
+
+      <!-- Animated SVG Pipeline Lines -->
+      <svg id="heroWorkflowSvg" width="100%" height="80" viewBox="0 0 400 80" style="margin-bottom:16px;">
+        <defs>
+          <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#172337"/>
+            <stop offset="50%" stop-color="#8F234F"/>
+            <stop offset="100%" stop-color="#23734A"/>
+          </linearGradient>
+        </defs>
+        <!-- Pipeline Track -->
+        <path d="M 30 40 L 370 40" stroke="#D9DEE5" stroke-width="2" stroke-dasharray="4 4" fill="none"/>
+        <path id="pipelineFlowLine" d="M 30 40 L 370 40" stroke="url(#lineGrad)" stroke-width="2.5" fill="none" stroke-dasharray="340" stroke-dashoffset="340"/>
+        <!-- Nodes -->
+        <circle cx="30" cy="40" r="7" fill="#172337"/>
+        <circle cx="115" cy="40" r="7" fill="#39475A"/>
+        <circle cx="200" cy="40" r="7" fill="#8F234F"/>
+        <circle cx="285" cy="40" r="7" fill="#3C6285"/>
+        <circle cx="370" cy="40" r="7" fill="#23734A"/>
+        <!-- Labels -->
+        <text x="30" y="65" font-size="9" fill="#7D8792" font-family="monospace" text-anchor="middle">ACQUIRE</text>
+        <text x="115" y="65" font-size="9" fill="#7D8792" font-family="monospace" text-anchor="middle">HASH</text>
+        <text x="200" y="65" font-size="9" fill="#7D8792" font-family="monospace" text-anchor="middle">CARVE</text>
+        <text x="285" y="65" font-size="9" fill="#7D8792" font-family="monospace" text-anchor="middle">VERIFY</text>
+        <text x="370" y="65" font-size="9" fill="#7D8792" font-family="monospace" text-anchor="middle">PURGE</text>
+      </svg>
+
+      <div class="dossier-line-row">
+        <span class="dossier-label">Integrity Protocol</span>
+        <span class="dossier-value" style="font-size:12px;">SHA-256 (FIPS 180-4)</span>
+      </div>
+      <div class="dossier-line-row">
+        <span class="dossier-label">Carving Registry</span>
+        <span class="dossier-value" style="font-size:12px;">JPEG • PNG • PDF • ZIP • GIF</span>
+      </div>
+      <div class="dossier-line-row">
+        <span class="dossier-label">Sanitization Gate</span>
+        <span class="dossier-value" style="font-size:12px; color:var(--color-burgundy);">2-Person Distinct Authorization</span>
+      </div>
+      <div class="dossier-line-row">
+        <span class="dossier-label">Audit Architecture</span>
+        <span class="dossier-value" style="font-size:12px; color:var(--color-success);">Tamper-Evident SQL Block Ledger</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="landing-section-divider"></div>
+
+  <!-- Section 3: Core Capabilities -->
+  <section id="capabilities" class="landing-content-block">
+    <div class="section-label">PLATFORM CAPABILITIES</div>
+    <h2 class="section-title">End-to-End Forensic Integrity & Controlled Erasure</h2>
+    <p class="section-desc">Designed strictly to solve SIH26149 by bridging the technical gap between evidentiary recovery, chain-of-custody tracking, and verifiable device sanitization.</p>
+
+    <div class="features-grid-3">
+      <div class="feature-box">
+        <div class="feature-box-icon"><i data-lucide="fingerprint"></i></div>
+        <h3 class="feature-box-title">Cryptographic Custody</h3>
+        <p class="feature-box-text">Instant SHA-256 calculation upon ingest into controlled storage. Continuous verification guarantees no file is modified during analysis.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-icon"><i data-lucide="refresh-cw"></i></div>
+        <h3 class="feature-box-title">Multi-Format Signature Carving</h3>
+        <p class="feature-box-text">Deterministic byte-level boundary scanning for documents, archives, and images from unallocated clusters and memory dumps.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-icon"><i data-lucide="shield"></i></div>
+        <h3 class="feature-box-title">Two-Person Sanitization Gate</h3>
+        <p class="feature-box-text">Destructive zero overwrite execution is procedurally and cryptographically locked until legal hold is released and two distinct officers authorize.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-icon"><i data-lucide="git-branch"></i></div>
+        <h3 class="feature-box-title">Tamper-Evident Audit Ledger</h3>
+        <p class="feature-box-text">Every action is recorded in a cryptographically chained block structure with previous/current hashes, preventing backdated modifications.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-icon"><i data-lucide="clock"></i></div>
+        <h3 class="feature-box-title">Activity Timeline Reconstruction</h3>
+        <p class="feature-box-text">Automated chronological event normalization mapping case creation, device ingestion, carving jobs, approvals, and sanitizations.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-icon"><i data-lucide="file-check-2"></i></div>
+        <h3 class="feature-box-title">Verifiable PDF Certificates</h3>
+        <p class="feature-box-text">Generates official sanitization certificates embedded with cryptographic digests, approval records, and scannable QR verification tokens.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="landing-section-divider"></div>
+
+  <!-- Section 4: Architecture Flow -->
+  <section id="architecture" class="landing-content-block">
+    <div class="section-label">SYSTEM ARCHITECTURE</div>
+    <h2 class="section-title">Strict Chain-of-Custody Lifecycle</h2>
+    <p class="section-desc">From initial case registration through legal closure and verifiable device reuse.</p>
+
+    <div class="workflow-svg-wrap">
+      <div style="display:flex; justify-content:space-between; text-align:center; flex-wrap:wrap; gap:16px;">
+        <div style="flex:1; min-width:120px;">
+          <div style="font-size:11px; font-family:var(--font-mono); color:var(--color-burgundy); font-weight:600;">STEP 01</div>
+          <div style="font-weight:600; font-size:13.5px; margin:4px 0;">Case Ingest</div>
+          <p style="font-size:12px; color:var(--text-muted);">Register case & controlled device with baseline hash.</p>
+        </div>
+        <div style="flex:1; min-width:120px;">
+          <div style="font-size:11px; font-family:var(--font-mono); color:var(--color-burgundy); font-weight:600;">STEP 02</div>
+          <div style="font-weight:600; font-size:13.5px; margin:4px 0;">Read-Only Carve</div>
+          <p style="font-size:12px; color:var(--text-muted);">Signature-based extraction of JPEG, PNG, PDF, ZIP artifacts.</p>
+        </div>
+        <div style="flex:1; min-width:120px;">
+          <div style="font-size:11px; font-family:var(--font-mono); color:var(--color-burgundy); font-weight:600;">STEP 03</div>
+          <div style="font-weight:600; font-size:13.5px; margin:4px 0;">Timeline Analysis</div>
+          <p style="font-size:12px; color:var(--text-muted);">Normalize forensic activity events into chronological timeline.</p>
+        </div>
+        <div style="flex:1; min-width:120px;">
+          <div style="font-size:11px; font-family:var(--font-mono); color:var(--color-burgundy); font-weight:600;">STEP 04</div>
+          <div style="font-weight:600; font-size:13.5px; margin:4px 0;">Dual Approval</div>
+          <p style="font-size:12px; color:var(--text-muted);">Legal hold release + two distinct officer sign-offs.</p>
+        </div>
+        <div style="flex:1; min-width:120px;">
+          <div style="font-size:11px; font-family:var(--font-mono); color:var(--color-burgundy); font-weight:600;">STEP 05</div>
+          <div style="font-weight:600; font-size:13.5px; margin:4px 0;">Sanitization & Cert</div>
+          <p style="font-size:12px; color:var(--text-muted);">Zero overwrite, ledger commit, and signed PDF with QR code.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Landing Footer -->
+  <footer class="landing-footer">
+    <div class="footer-inner">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="brand-emblem" style="width:26px; height:26px; font-size:12px;">FS</div>
+        <span style="font-weight:600; color:var(--color-primary);">ForenSecure Chain</span>
+        <span style="color:var(--text-muted);">• SIH 2026 Problem Statement SIH26149</span>
+      </div>
+      <div>
+        <button class="btn btn-burgundy btn-sm" onclick="openConsoleDirect()">Launch Workstation &rarr;</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Real Authentication Modal: Supabase Cloud & Local Cryptographic Ledger -->
+  <div id="modalLogin" class="modal-backdrop">
+    <div class="modal-panel" style="max-width:480px;">
+      <div class="modal-header" style="margin-bottom:14px;">
+        <div>
+          <div class="section-label" style="font-size:10.5px; margin-bottom:2px;">AUTHENTICATED ACCESS</div>
+          <h3 class="modal-title">Forensic Workstation Access</h3>
+        </div>
+        <button class="btn-icon" onclick="closeModal('modalLogin')"><i data-lucide="x"></i></button>
+      </div>
+
+      <!-- Tab Selector: Sign In vs Create Account -->
+      <div class="auth-tab-bar">
+        <button type="button" id="tabBtnSignIn" class="auth-tab-btn active" onclick="switchAuthTab('signin')">
+          <i data-lucide="log-in" style="width:14px; height:14px;"></i> Sign In
+        </button>
+        <button type="button" id="tabBtnSignUp" class="auth-tab-btn" onclick="switchAuthTab('signup')">
+          <i data-lucide="user-plus" style="width:14px; height:14px;"></i> Create Account
+        </button>
+      </div>
+
+      <!-- Feedback Alerts -->
+      <div id="authAlertBox" style="display:none; padding:10px 14px; background:var(--color-danger-light); border:1px solid var(--color-danger-border); color:var(--color-danger); border-radius:var(--radius-sm); font-size:12.5px; margin-bottom:14px;"></div>
+      <div id="authSuccessBox" style="display:none; padding:10px 14px; background:var(--color-success-light); border:1px solid var(--color-success-border); color:var(--color-success); border-radius:var(--radius-sm); font-size:12.5px; margin-bottom:14px;"></div>
+
+      <!-- Tab 1: Sign In Form -->
+      <form id="formSignIn">
+        <div class="form-group">
+          <label class="form-label">Official Email Address</label>
+          <input type="email" id="loginEmail" class="form-input" required placeholder="e.g. officer.name@agency.gov">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="password-input-wrap">
+            <input type="password" id="loginPassword" class="form-input" required placeholder="Enter your password">
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', 'loginPassEye')">
+              <i id="loginPassEye" data-lucide="eye" style="width:16px; height:16px;"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="btnSignInSubmit" class="btn btn-burgundy" style="width:100%; margin-top:8px;">
+          Authenticate Session <i data-lucide="arrow-right"></i>
+        </button>
+      </form>
+
+      <!-- Tab 2: Create Account Form (Real Sign Up) -->
+      <form id="formSignUp" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Official Full Name & Designation</label>
+          <input type="text" id="signupName" class="form-input" required placeholder="e.g. Inspector R. Vance">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Official Government Email</label>
+          <input type="email" id="signupEmail" class="form-input" required placeholder="e.g. r.vance@agency.gov">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Secure Password</label>
+          <div class="password-input-wrap">
+            <input type="password" id="signupPassword" class="form-input" minlength="8" required placeholder="Minimum 8 characters">
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('signupPassword', 'signupPassEye')">
+              <i id="signupPassEye" data-lucide="eye" style="width:16px; height:16px;"></i>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Forensic Duty Role & Jurisdiction</label>
+          <select id="signupRole" class="form-select" required>
+            <option value="investigator">Lead Forensic Investigator (Evidence handling, forensic imaging, report drafting)</option>
+            <option value="authorized_officer">Authorized Approving Officer (Dual-authorization sign-off, sanitization oversight)</option>
+            <option value="admin">System / Court Administrator (Full ledger verification and configuration)</option>
+          </select>
+        </div>
+
+        <div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:var(--radius-sm); padding:10px 12px; margin-bottom:14px; font-size:11.5px; color:var(--text-secondary); line-height:1.45;">
+          <i data-lucide="shield-check" style="width:13px; height:13px; color:var(--color-burgundy); vertical-align:-2px; margin-right:3px;"></i>
+          Registration commits an immutable <code>user_registered</code> block into the SHA-256 tamper-evident blockchain ledger.
+        </div>
+
+        <button type="submit" id="btnSignUpSubmit" class="btn btn-burgundy" style="width:100%;">
+          Register Official & Enter Workstation <i data-lucide="check"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supabase JS Client & API Service -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/api.js"></script>
+  <script>
+    lucide.createIcons();
+
+    // GSAP Pipeline Animation
+    window.addEventListener('load', () => {
+      if (typeof gsap !== 'undefined') {
+        const tl = gsap.timeline({ repeat: -1, repeatDelay: 1 });
+        tl.to("#pipelineFlowLine", {
+          strokeDashoffset: 0,
+          duration: 3,
+          ease: "power1.inOut"
+        }).to("#pipelineFlowLine", {
+          opacity: 0.3,
+          duration: 0.5
+        });
+      }
+    });
+
+    function openLoginModal() {
+      document.getElementById('modalLogin').classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function openConsoleDirect() {
+      if (api.getToken()) {
+        window.location.href = "dashboard.html";
+      } else {
+        openLoginModal();
+      }
+    }
+
+    // Tab Switching
+    function switchAuthTab(tab) {
+      const signInTab = document.getElementById('tabBtnSignIn');
+      const signUpTab = document.getElementById('tabBtnSignUp');
+      const signInForm = document.getElementById('formSignIn');
+      const signUpForm = document.getElementById('formSignUp');
+      const alertBox = document.getElementById('authAlertBox');
+      const successBox = document.getElementById('authSuccessBox');
+
+      alertBox.style.display = 'none';
+      successBox.style.display = 'none';
+
+      if (tab === 'signin') {
+        signInTab.classList.add('active');
+        signUpTab.classList.remove('active');
+        signInForm.style.display = 'block';
+        signUpForm.style.display = 'none';
+      } else {
+        signUpTab.classList.add('active');
+        signInTab.classList.remove('active');
+        signUpForm.style.display = 'block';
+        signInForm.style.display = 'none';
+      }
+      lucide.createIcons();
+    }
+
+    // Password Visibility Toggle
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+
+    // Real Sign In Handler
+    document.getElementById('formSignIn').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+      const alertBox = document.getElementById('authAlertBox');
+      const successBox = document.getElementById('authSuccessBox');
+      const btn = document.getElementById('btnSignInSubmit');
+
+      alertBox.style.display = 'none';
+      successBox.style.display = 'none';
+      btn.disabled = true;
+      btn.innerHTML = 'Verifying Credentials... <i data-lucide="loader-2"></i>';
+      lucide.createIcons();
+
+      try {
+        await api.login(email, pass);
+        successBox.innerText = "Authentication successful. Launching secure workstation...";
+        successBox.style.display = 'block';
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 400);
+      } catch (err) {
+        alertBox.innerText = err.message;
+        alertBox.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = 'Authenticate Session <i data-lucide="arrow-right"></i>';
+        lucide.createIcons();
+      }
+    });
+
+    // Real Sign Up Handler
+    document.getElementById('formSignUp').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const pass = document.getElementById('signupPassword').value;
+      const role = document.getElementById('signupRole').value;
+      const alertBox = document.getElementById('authAlertBox');
+      const successBox = document.getElementById('authSuccessBox');
+      const btn = document.getElementById('btnSignUpSubmit');
+
+      alertBox.style.display = 'none';
+      successBox.style.display = 'none';
+
+      if (!name || !email || !pass) {
+        alertBox.innerText = "All fields are mandatory.";
+        alertBox.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = 'Registering Forensic Identity... <i data-lucide="loader-2"></i>';
+      lucide.createIcons();
+
+      try {
+        await api.signUp({ name, email, password: pass, role });
+        successBox.innerText = "Identity registered & ledger block committed! Entering workstation...";
+        successBox.style.display = 'block';
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 500);
+      } catch (err) {
+        alertBox.innerText = err.message;
+        alertBox.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = 'Register Official & Enter Workstation <i data-lucide="check"></i>';
+        lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -69,6 +69,8 @@ def append_block(
     file_hash: str,
     audit_data: dict[str, Any] | None,
     timestamp: datetime | None = None,
+    actor_id: str | None = None,
+    case_id: str | None = None,
 ) -> BlockchainBlock:
     """Append one block to the local tamper-evident ledger."""
     previous_block = db.scalar(
@@ -93,6 +95,8 @@ def append_block(
         block_index=block_index,
         timestamp=block_timestamp,
         action=action,
+        case_id=case_id,
+        actor_id=actor_id,
         file_id=file_id,
         file_hash=file_hash,
         previous_hash=previous_hash,

@@ -130,10 +130,82 @@ def _pdf_carver(data: bytes) -> list[CarveCandidate]:
     return candidates
 
 
+def _zip_carver(data: bytes) -> list[CarveCandidate]:
+    candidates: list[CarveCandidate] = []
+    cursor = 0
+    ZIP_SIG = b"PK\x03\x04"
+    EOCD_SIG = b"PK\x05\x06"
+    while (start := data.find(ZIP_SIG, cursor)) != -1:
+        eocd = data.find(EOCD_SIG, start + 4)
+        if eocd == -1:
+            break
+        # EOCD record is 22 bytes + comment length
+        comment_len = 0
+        if eocd + 22 <= len(data):
+            comment_len = int.from_bytes(data[eocd + 20 : eocd + 22], "little")
+        end = min(eocd + 22 + comment_len, len(data))
+        candidates.append(
+            CarveCandidate(
+                file_type="application/zip",
+                extension="zip",
+                start_offset=start,
+                end_offset=end,
+                data=data[start:end],
+                metadata={
+                    "actual": {"format": "ZIP Archive", "signature": "PK 03 04"},
+                    "inferred": {"boundary": "ZIP EOCD record PK 05 06"},
+                },
+            )
+        )
+        cursor = end
+    return candidates
+
+
+def _gif_carver(data: bytes) -> list[CarveCandidate]:
+    candidates: list[CarveCandidate] = []
+    cursor = 0
+    while cursor < len(data):
+        start = -1
+        for sig in (b"GIF87a", b"GIF89a"):
+            pos = data.find(sig, cursor)
+            if pos != -1 and (start == -1 or pos < start):
+                start = pos
+        if start == -1:
+            break
+        trailer = data.find(b"\x3b", start + 6)
+        if trailer == -1:
+            break
+        end = trailer + 1
+        width = int.from_bytes(data[start + 6 : start + 8], "little") if len(data) >= start + 8 else 0
+        height = int.from_bytes(data[start + 8 : start + 10], "little") if len(data) >= start + 10 else 0
+        candidates.append(
+            CarveCandidate(
+                file_type="image/gif",
+                extension="gif",
+                start_offset=start,
+                end_offset=end,
+                data=data[start:end],
+                metadata={
+                    "actual": {
+                        "format": "GIF",
+                        "signature": data[start : start + 6].decode("ascii", errors="replace"),
+                        "dimensions": {"width": width, "height": height},
+                        "dimensions_source": "actual",
+                    },
+                    "inferred": {"boundary": "GIF trailer 3B"},
+                },
+            )
+        )
+        cursor = end
+    return candidates
+
+
 CARVER_REGISTRY: tuple[Callable[[bytes], list[CarveCandidate]], ...] = (
     _jpeg_carver,
     _png_carver,
     _pdf_carver,
+    _zip_carver,
+    _gif_carver,
 )
 
 

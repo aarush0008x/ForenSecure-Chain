@@ -11,6 +11,8 @@ class BlockchainBlockResponse(BaseModel):
     block_index: int
     timestamp: datetime
     action: str
+    case_id: str | None = None
+    actor_id: str | None = None
     file_id: str | None
     file_hash: str
     previous_hash: str | None

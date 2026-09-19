@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     storage_dir: Path = PROJECT_ROOT / "storage"
     max_upload_size: int = 100 * 1024 * 1024
     max_recovery_input_size: int = 512 * 1024 * 1024
+    jwt_secret_key: str = "forensecure-chain-super-secret-key-sih2026"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 1440
+    supabase_url: str = ""
+    supabase_anon_key: str = ""
 
     model_config = SettingsConfigDict(
         env_file=PROJECT_ROOT / ".env",

@@ -7,6 +7,8 @@ class FileResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     file_id: str
+    case_id: str | None = None
+    device_id: str | None = None
     original_filename: str
     file_path: str
     file_size: int

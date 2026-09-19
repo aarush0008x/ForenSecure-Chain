@@ -16,6 +16,7 @@ router = APIRouter(prefix="/api/blockchain", tags=["blockchain"])
 
 
 @router.get("", response_model=BlockchainListResponse)
+@router.get("/blocks", response_model=BlockchainListResponse)
 def list_blockchain(db: Session = Depends(get_db)) -> BlockchainListResponse:
     blocks = list(
         db.scalars(select(BlockchainBlock).order_by(BlockchainBlock.block_index.asc()))

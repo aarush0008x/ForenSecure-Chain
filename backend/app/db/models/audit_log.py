@@ -18,9 +18,14 @@ class AuditLog(Base):
         Index("ix_audit_logs_file_id", "file_id"),
         Index("ix_audit_logs_operation_id", "operation_id"),
         Index("ix_audit_logs_timestamp", "timestamp"),
+        Index("ix_audit_logs_case_id", "case_id"),
+        Index("ix_audit_logs_actor_id", "actor_id"),
     )
 
     audit_id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    case_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    actor_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    object_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     file_id: Mapped[str | None] = mapped_column(ForeignKey("files.file_id", ondelete="SET NULL"))
     operation_id: Mapped[str | None] = mapped_column(
         ForeignKey("operations.operation_id", ondelete="SET NULL")
