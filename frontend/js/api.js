@@ -4,7 +4,10 @@
  * NO MOCK DATA. ZERO DEMO FABRICATION.
  */
 
-const API_BASE = window.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const API_BASE = window.VITE_API_BASE_URL 
+  || window.API_BASE_URL 
+  || localStorage.getItem("forensecure_api_url") 
+  || (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://127.0.0.1:8000" : "");
 
 class ApiService {
   constructor() {
